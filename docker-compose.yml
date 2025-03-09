@@ -8,7 +8,7 @@ services:
   mysql-m:
     image: mysql:8
     container_name: mysql-m
-    restart: unless_stopped
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: testdb
@@ -19,16 +19,18 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_master_data:/var/lib/mysql
+      - mysql_master_data5:/var/lib/mysql
+      - mysql_master_log5:/var/log/mysql
       - ./mysql/master.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+      - ./mysql/init-master.sh:/docker-entrypoint-initdb.d/init.sh
     networks:
       - my_network
+    command: ["mysqld", "--mysql-native-password=ON"]
 
   mysql-s1:
     image: mysql:8
     container_name: mysql-s1
-    restart: unless_stopped
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: testdb
@@ -41,8 +43,9 @@ services:
       - "3307:3306"
     volumes:
       - mysql_slave1_data:/var/lib/mysql
+      - mysql_slave1_log:/var/log/mysql
       - ./mysql/slave1.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./init-master.sh:/docker-entrypoint-initdb.d/init-slave.sh
+      - ./mysql/init-slave.sh:/docker-entrypoint-initdb.d/init.sh
     networks:
       - my_network
     depends_on:
@@ -51,7 +54,7 @@ services:
   mysql-s2:
     image: mysql:8
     container_name: mysql-s2
-    restart: unless_stopped
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: testdb
@@ -64,8 +67,9 @@ services:
       - "3308:3306"
     volumes:
       - mysql_slave2_data:/var/lib/mysql
-      - ./mysql1/slave.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
+      - mysql_slave2_log:/var/log/mysql
+      - ./mysql/slave2.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./mysql/init-slave.sh:/docker-entrypoint-initdb.d/init.sh
     networks:
       - my_network
     depends_on:
@@ -74,7 +78,7 @@ services:
   app:
     build: ./app
     container_name: app
-    restart: unless_stopped
+    restart: unless-stopped
     environment:
       DB_HOST: "mysql-m"
       DB_USER: "user"
@@ -90,7 +94,23 @@ services:
       #- mysql-s1
       #- mysql-s2
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: no
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+    depends_on:
+      - mysql-m
+      - mysql-s1
+      - mysql-s2
+
 volumes:
-  mysql_master_data:
+  mysql_master_data5:
+  mysql_master_log5:
   mysql_slave1_data:
+  mysql_slave1_log:
   mysql_slave2_data:
+  mysql_slave2_log:

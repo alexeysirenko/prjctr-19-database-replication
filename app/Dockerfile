@@ -1,4 +1,4 @@
-FROM python:3.14
+FROM python:3.14-rc
 
 WORKDIR /app
 
@@ -8,4 +8,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY write_data.py .
 COPY seed.py .
 
-CMD ["python", "/app/write_data.py"]
+CMD ["python", "-u", "/app/write_data.py"]
+

@@ -36,7 +36,7 @@ def seed_database():
         """)
 
         cursor.executemany("""
-            INSERT INTO users (id, name, email) VALUES (%s, %s);
+            INSERT INTO users (name, email) VALUES (%s, %s);
         """, [
             ("Alice", "alice@example.com"),
             ("Bob", "bob@example.com"),

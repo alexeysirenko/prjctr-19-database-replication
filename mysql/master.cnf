@@ -1,4 +1,7 @@
 [mysqld]
 server-id=1
-log_bin=mysql-bin
+#log_bin=mysql-bin
+log_bin=/var/log/mysql/mysql-bin.log
 binlog_do_db=testdb
+#default-authentication-plugin=mysql_native_password
+#plugin-load-add=mysql_native_password

@@ -1,15 +1,23 @@
 #!/bin/bash
 set -e
 
+
 echo "Initializing MySQL Master..."
 
 # Wait for MySQL to fully start
-sleep 10
+echo "Waiting for MySQL master ($MASTER_HOST) to be available..."
+until mysqladmin ping -h "$MASTER_HOST" -u root -p"$MYSQL_ROOT_PASSWORD" --silent; do
+    echo "Waiting for master..."
+    sleep 2
+done
+
+mkdir -p /var/log/mysql
+chown -R mysql:mysql /var/log/mysql
 
 # Create replication user
 mysql -u root -p$MYSQL_ROOT_PASSWORD -e "
-CREATE USER IF NOT EXISTS '$REPL_USER'@'%' IDENTIFIED WITH mysql_native_password BY '$REPL_PASSWORD';
-GRANT REPLICATION SLAVE ON *.* TO '$REPL_USER'@'%';
+CREATE USER IF NOT EXISTS '$REPL_USER'@'$MASTER_HOST' IDENTIFIED WITH mysql_native_password BY '$REPL_PASSWORD';
+GRANT REPLICATION SLAVE ON *.* TO '$REPL_USER'@'$MASTER_HOST';
 FLUSH PRIVILEGES;
 "
 
