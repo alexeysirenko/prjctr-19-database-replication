@@ -8,5 +8,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY write_data.py .
 COPY seed.py .
 
-CMD ["python", "-u", "/app/write_data.py"]
+CMD ["sleep", "infinity"]
 

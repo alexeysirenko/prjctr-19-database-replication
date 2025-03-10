@@ -11,7 +11,9 @@ docker exec -it app python /app/seed.py
 docker exec -it app python /app/write_data.py
 ```
 
-To test the repliciation run multiple times:
+Then the write script should be able to populate the database by inserting new payments every second.
+
+To test the repliciation run the next commands on replicas multiple times:
 
 ```
 docker exec -it mysql-s1 mysql -u root -proot -e "SELECT COUNT(*) FROM testdb.payments;"
