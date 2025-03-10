@@ -21,3 +21,17 @@ docker exec -it mysql-s1 mysql -u root -proot -e "SELECT * FROM testdb.payments 
 ```
 
 The new records should be added every second, replicated from the master node.
+
+## Try to remove a column in database on slave node (try to delete last column and column from the middle).
+
+Deleting the last column will cause no errors. Deleting a column in the middle will lead to an error like this:
+
+```
+Column 2 of table 'testdb.payments' cannot be converted from type 'decimal(10,2)' to type 'timestamp'
+```
+
+### Reason:
+
+Column positioning matters: In row-based replication, MySQL identifies columns by position, not by name.
+
+When you drop a middle column, it shifts all subsequent columns one position to the left, causing misalignment with the primary server.
