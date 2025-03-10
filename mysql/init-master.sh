@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-
 echo "Initializing MySQL Master..."
+
+mkdir -p /var/log/mysql
+chown -R mysql:mysql /var/log/mysql
 
 # Wait for MySQL to fully start
 echo "Waiting for MySQL master ($MASTER_HOST) to be available..."
@@ -11,8 +13,7 @@ until mysqladmin ping -h "$MASTER_HOST" -u root -p"$MYSQL_ROOT_PASSWORD" --silen
     sleep 2
 done
 
-mkdir -p /var/log/mysql
-chown -R mysql:mysql /var/log/mysql
+sleep 5
 
 # Create replication user
 mysql -u root -p$MYSQL_ROOT_PASSWORD -e "

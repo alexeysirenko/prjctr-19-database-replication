@@ -1,9 +1,6 @@
 [mysqld]
 server-id=3
-#relay_log=relay-bin
-log_bin=/var/log/mysql/mysql-bin.log
-relay-log=/var/log/mysql/mysql-relay-bin.log
+log_bin=mysql-bin
+relay-log=mysql-relay-bin
 read_only=1
 binlog_do_db=testdb
-#default-authentication-plugin=mysql_native_password
-#plugin-load-add=mysql_native_password

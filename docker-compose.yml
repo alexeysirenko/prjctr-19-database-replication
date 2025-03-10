@@ -1,12 +1,10 @@
-version: "3.8"
-
 networks:
   my_network:
     driver: bridge
 
 services:
   mysql-m:
-    image: mysql:8
+    image: mysql:8.4
     container_name: mysql-m
     restart: unless-stopped
     environment:
@@ -19,16 +17,17 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_master_data5:/var/lib/mysql
-      - mysql_master_log5:/var/log/mysql
+      - mysql_master_data6:/var/lib/mysql
+      - mysql_master_log6:/var/log/mysql
       - ./mysql/master.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./mysql/init-master.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./mysql/init-master.sh:/scripts/init.sh
     networks:
       - my_network
     command: ["mysqld", "--mysql-native-password=ON"]
+    # command: [ "bash", "-c", "mkdir -p /var/log/mysql && chown -R mysql:mysql /var/log/mysql && exec mysqld --mysql-native-password=ON", ]
 
   mysql-s1:
-    image: mysql:8
+    image: mysql:8.4
     container_name: mysql-s1
     restart: unless-stopped
     environment:
@@ -45,14 +44,15 @@ services:
       - mysql_slave1_data:/var/lib/mysql
       - mysql_slave1_log:/var/log/mysql
       - ./mysql/slave1.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./mysql/init-slave.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./mysql/init-slave.sh:/scripts/init.sh
     networks:
       - my_network
     depends_on:
       - mysql-m
+    command: ["mysqld", "--mysql-native-password=ON"]
 
   mysql-s2:
-    image: mysql:8
+    image: mysql:8.4
     container_name: mysql-s2
     restart: unless-stopped
     environment:
@@ -69,11 +69,12 @@ services:
       - mysql_slave2_data:/var/lib/mysql
       - mysql_slave2_log:/var/log/mysql
       - ./mysql/slave2.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./mysql/init-slave.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./mysql/init-slave.sh:/scripts/init.sh
     networks:
       - my_network
     depends_on:
       - mysql-m
+    command: ["mysqld", "--mysql-native-password=ON"]
 
   app:
     build: ./app
@@ -108,8 +109,8 @@ services:
       - mysql-s2
 
 volumes:
-  mysql_master_data5:
-  mysql_master_log5:
+  mysql_master_data6:
+  mysql_master_log6:
   mysql_slave1_data:
   mysql_slave1_log:
   mysql_slave2_data:
