@@ -13,7 +13,7 @@ docker exec -it app python /app/write_data.py
 
 Then the write script should be able to populate the database by inserting new payments every second.
 
-To test the repliciation run the next commands on replicas multiple times:
+To test the repliciation, run the next commands on replicas multiple times:
 
 ```
 docker exec -it mysql-s1 mysql -u root -proot -e "SELECT COUNT(*) FROM testdb.payments;"
